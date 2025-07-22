@@ -1,4 +1,13 @@
 scan-sdk-image:
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request: {}
+  workflow_dispatch: {}
+  schedule:
+    - cron: '20 17 * * *'  # Adjust to your preferred scan time
     runs-on: ubuntu-latest    
     steps:
     - name: Scan SDK base image with Trivy
