@@ -1,0 +1,71 @@
+name: Docker Image Vulnerability Scan (Grype)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  grype-scan:
+    name: Scan Docker Image with Grype
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          echo "🛠️ Building Docker image..."
+          docker build -t myapp:latest .
+
+      - name: Install Grype
+        run: |
+          echo "📦 Installing Grype..."
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
+          sudo mv grype /usr/local/bin/
+          grype version
+
+      - name: Scan base image (openjdk:8-jdk-alpine)
+        run: |
+          echo "🔍 Scanning base image: openjdk:8-jdk-alpine"
+          grype openjdk:8-jdk-alpine -o table || true
+          echo "✅ Base image scan completed."
+
+      - name: Scan built image and print findings
+        run: |
+          echo "🚀 Scanning built Docker image: myapp:latest"
+          # Print all vulnerabilities to the log
+          grype myapp:latest -o table || true
+
+          echo ""
+          echo "--------------------------------------------------"
+          echo "📊 JSON Report Preview (Top 20 Findings)"
+          echo "--------------------------------------------------"
+          grype myapp:latest -o json | jq '.matches[:20]' || true
+
+      - name: Fail if High or Critical vulnerabilities found
+        run: |
+          echo "🚨 Checking for High/Critical vulnerabilities..."
+          grype myapp:latest --fail-on High
+
+      - name: Upload detailed reports (optional)
+        if: always()
+        run: |
+          echo "📄 Generating vulnerability reports..."
+          mkdir -p reports
+          grype myapp:latest -o json > reports/grype-report.json
+          grype myapp:latest -o table > reports/grype-report.txt
+        continue-on-error: true
+
+      - name: Upload reports as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grype-scan-reports
+          path: reports/
