@@ -17,5 +17,5 @@ jobs:
       - name: Scan SDK base image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: postgres:15-alpine
+          image-ref: redis:7-alpine
           exit-code: '1'
