@@ -17,5 +17,5 @@ jobs:
       - name: Scan SDK base image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: node:24-alpine3.23
+          image-ref: rabbitmq:3-management
           exit-code: '1'
