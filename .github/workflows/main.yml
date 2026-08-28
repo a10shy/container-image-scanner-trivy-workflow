@@ -17,5 +17,5 @@ jobs:
       - name: Scan SDK base image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: node:20.18.3-alpine3.21
+          image-ref: node:24-alpine3.24
           exit-code: '1'
