@@ -17,5 +17,5 @@ jobs:
       - name: Scan SDK base image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: public.ecr.aws/docker/library/nginx:1.29.4-alpine3.23-slim
+          image-ref: mcr.microsoft.com/dotnet/aspnet:8.0-alpine
           exit-code: '1'
