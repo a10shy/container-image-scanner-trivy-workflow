@@ -17,5 +17,5 @@ jobs:
       - name: Scan SDK base image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: public.ecr.awsdockerlibrarynode22-alpine
+          image-ref: public.ecr.aws/docker/library/node:22-alpine
           exit-code: '1'
